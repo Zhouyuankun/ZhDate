@@ -92,14 +92,14 @@ public class ChineseDate: CustomStringConvertible {
         return "农历\(self.lunarYear)年\(self.leapMonth ? "闰" : "")\(self.lunarMonth)月\(self.lunarDay)日"
     }
     
-    let lunarYear: Int
-    let lunarMonth: Int
-    let lunarDay: Int
-    let leapMonth: Bool
+    public let lunarYear: Int
+    public let lunarMonth: Int
+    public let lunarDay: Int
+    public let leapMonth: Bool
     let yearCode: Int
     let newYear: Date
     
-    init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) {
+    public init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) {
         guard ChineseDate.validate(year: lunarYear, month: lunarMonth, day: lunarDay, leap: leapMonth) else {
             fatalError("The Chinese date given is not exist")
         }
@@ -113,13 +113,13 @@ public class ChineseDate: CustomStringConvertible {
     
     //lunar to solar
     //
-    func toDate() -> Date {
+    public func toDate() -> Date {
         var dateComponent = DateComponents()
         dateComponent.day = dayPassed()
         return Calendar.current.date(byAdding: dateComponent, to: self.newYear)!
     }
     
-    static func fromDate(date: Date) -> ChineseDate {
+    public static func fromDate(date: Date) -> ChineseDate {
         var lunarYear = Calendar.current.dateComponents([.year], from: date).year!
         //当时农历新年时的日期对象
         let newYearDate = ChineseDate.dateStringToDate(str: CHINESENEWYEAR[lunarYear - 1900])
@@ -182,7 +182,7 @@ public class ChineseDate: CustomStringConvertible {
         return daysPassedMonth + self.lunarDay - 1
     }
     
-    func chinese() -> String {
+    public func chinese() -> String {
         let ZHNUMS = ["〇","一","二","三","四","五","六","七","八","九","十"]
         let SHENGXIAO = ["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"]
         var zhYear = ""
@@ -219,7 +219,7 @@ public class ChineseDate: CustomStringConvertible {
         return "\(zhYear)年\(zhMonth)月\(zhDay) \(zhTGDZ)\(zhSX)年"
     }
     
-    static func today() -> ChineseDate {
+    public static func today() -> ChineseDate {
         return ChineseDate.fromDate(date: Date())
     }
 
@@ -284,23 +284,23 @@ public class ChineseDate: CustomStringConvertible {
 }
 
 extension ChineseDate {
-    static func == (left: ChineseDate, right: ChineseDate) -> Bool {
+    public static func == (left: ChineseDate, right: ChineseDate) -> Bool {
         return left.lunarYear == right.lunarYear && left.lunarMonth == right.lunarMonth && left.lunarDay == right.lunarDay && left.leapMonth == right.leapMonth
     }
     
-    static func + (left: ChineseDate, right: Int) -> ChineseDate {
+    public static func + (left: ChineseDate, right: Int) -> ChineseDate {
         return ChineseDate.fromDate(date: Calendar.current.date(byAdding: .day, value: right, to: left.toDate())!)
     }
     
-    static func - (left: ChineseDate, right: Int) -> ChineseDate {
+    public static func - (left: ChineseDate, right: Int) -> ChineseDate {
         return ChineseDate.fromDate(date: Calendar.current.date(byAdding: .day, value: -right, to: left.toDate())!)
     }
     
-    static func - (left: ChineseDate, right: ChineseDate) -> Int {
+    public static func - (left: ChineseDate, right: ChineseDate) -> Int {
         return Calendar.current.dateComponents([.day], from: right.toDate(), to: left.toDate()).day!
     }
     
-    static func - (left: ChineseDate, right: Date) -> Int {
+    public static func - (left: ChineseDate, right: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: right, to: left.toDate()).day!
     }
 }
