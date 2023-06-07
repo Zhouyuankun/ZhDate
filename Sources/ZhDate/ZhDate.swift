@@ -86,9 +86,9 @@ let CHINESEYEARCODE: [Int] = [
     92838,  22224,  19168,  43476,  41680,  53584,  62034,  54560
 ]
 
-class ZhDate: CustomStringConvertible {
+public class ZhDate: CustomStringConvertible {
     //toString
-    var description: String {
+    public var description: String {
         return "农历\(self.lunarYear)年\(self.leapMonth ? "闰" : "")\(self.lunarMonth)月\(self.lunarDay)日"
     }
     
