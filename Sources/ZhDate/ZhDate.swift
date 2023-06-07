@@ -86,7 +86,7 @@ let CHINESEYEARCODE: [Int] = [
     92838,  22224,  19168,  43476,  41680,  53584,  62034,  54560
 ]
 
-public class ZhDate: CustomStringConvertible {
+public class ChineseDate: CustomStringConvertible {
     //toString
     public var description: String {
         return "农历\(self.lunarYear)年\(self.leapMonth ? "闰" : "")\(self.lunarMonth)月\(self.lunarDay)日"
@@ -100,7 +100,7 @@ public class ZhDate: CustomStringConvertible {
     let newYear: Date
     
     init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) {
-        guard ZhDate.validate(year: lunarYear, month: lunarMonth, day: lunarDay, leap: leapMonth) else {
+        guard ChineseDate.validate(year: lunarYear, month: lunarMonth, day: lunarDay, leap: leapMonth) else {
             fatalError("The Chinese date given is not exist")
         }
         self.lunarYear = lunarYear
@@ -108,7 +108,7 @@ public class ZhDate: CustomStringConvertible {
         self.lunarDay = lunarDay
         self.leapMonth = leapMonth
         self.yearCode = CHINESEYEARCODE[lunarYear - 1900]
-        self.newYear = ZhDate.dateStringToDate(str: CHINESENEWYEAR[self.lunarYear - 1900])
+        self.newYear = ChineseDate.dateStringToDate(str: CHINESENEWYEAR[self.lunarYear - 1900])
     }
     
     //lunar to solar
@@ -119,10 +119,10 @@ public class ZhDate: CustomStringConvertible {
         return Calendar.current.date(byAdding: dateComponent, to: self.newYear)!
     }
     
-    static func fromDate(date: Date) -> ZhDate {
+    static func fromDate(date: Date) -> ChineseDate {
         var lunarYear = Calendar.current.dateComponents([.year], from: date).year!
         //当时农历新年时的日期对象
-        let newYearDate = ZhDate.dateStringToDate(str: CHINESENEWYEAR[lunarYear - 1900])
+        let newYearDate = ChineseDate.dateStringToDate(str: CHINESENEWYEAR[lunarYear - 1900])
         //如果还没有到农历正月初一 农历年份减去1
         lunarYear -= (newYearDate > date) ? 1 : 0
         //查询日期距离当年的春节差了多久
@@ -130,7 +130,7 @@ public class ZhDate: CustomStringConvertible {
         //被查询日期的年份码
         let yearCode = CHINESEYEARCODE[lunarYear - 1900]
         //取得本年的月份列表
-        let monthDays = ZhDate.decode(yearCode: yearCode)
+        let monthDays = ChineseDate.decode(yearCode: yearCode)
         
         var accumulated = monthDays
         for i in 1..<accumulated.count {
@@ -157,12 +157,12 @@ public class ZhDate: CustomStringConvertible {
             leapMonth = true
         }
         
-        return ZhDate(lunarYear: lunarYear, lunarMonth: lunarMonth, lunarDay: lunarDay, leapMonth: leapMonth)
+        return ChineseDate(lunarYear: lunarYear, lunarMonth: lunarMonth, lunarDay: lunarDay, leapMonth: leapMonth)
     }
     
     //Days between current lunar day and lunar new year
     func dayPassed() -> Int {
-        let monthDays = ZhDate.decode(yearCode: self.yearCode)
+        let monthDays = ChineseDate.decode(yearCode: self.yearCode)
         //当前农历年的闰月，为0表示无闰月
         let monthLeap = self.yearCode & 0xf
         //当年无闰月，或者有闰月但是当前月小于闰月
@@ -188,7 +188,7 @@ public class ZhDate: CustomStringConvertible {
         var zhYear = ""
         var zhMonth = self.leapMonth ? "闰" : ""
         var zhDay = ""
-        let zhTGDZ = ZhDate.tgdz(num: self.lunarYear - 1900 + 36)
+        let zhTGDZ = ChineseDate.tgdz(num: self.lunarYear - 1900 + 36)
         let zhSX = SHENGXIAO[(self.lunarYear - 1900) % 12]
         for i in 0..<4 {
             let str = String(self.lunarYear)
@@ -219,8 +219,8 @@ public class ZhDate: CustomStringConvertible {
         return "\(zhYear)年\(zhMonth)月\(zhDay) \(zhTGDZ)\(zhSX)年"
     }
     
-    static func today() -> ZhDate {
-        return ZhDate.fromDate(date: Date())
+    static func today() -> ChineseDate {
+        return ChineseDate.fromDate(date: Date())
     }
 
     static func validate(year: Int, month: Int, day: Int, leap: Bool) -> Bool {
@@ -273,7 +273,7 @@ public class ZhDate: CustomStringConvertible {
     }
     
     static func monthDays(year: Int) -> [Int] {
-        return ZhDate.decode(yearCode: CHINESEYEARCODE[year - 1900])
+        return ChineseDate.decode(yearCode: CHINESEYEARCODE[year - 1900])
     }
     
     static func dateStringToDate(str: String) -> Date {
@@ -283,24 +283,24 @@ public class ZhDate: CustomStringConvertible {
     }
 }
 
-extension ZhDate {
-    static func == (left: ZhDate, right: ZhDate) -> Bool {
+extension ChineseDate {
+    static func == (left: ChineseDate, right: ChineseDate) -> Bool {
         return left.lunarYear == right.lunarYear && left.lunarMonth == right.lunarMonth && left.lunarDay == right.lunarDay && left.leapMonth == right.leapMonth
     }
     
-    static func + (left: ZhDate, right: Int) -> ZhDate {
-        return ZhDate.fromDate(date: Calendar.current.date(byAdding: .day, value: right, to: left.toDate())!)
+    static func + (left: ChineseDate, right: Int) -> ChineseDate {
+        return ChineseDate.fromDate(date: Calendar.current.date(byAdding: .day, value: right, to: left.toDate())!)
     }
     
-    static func - (left: ZhDate, right: Int) -> ZhDate {
-        return ZhDate.fromDate(date: Calendar.current.date(byAdding: .day, value: -right, to: left.toDate())!)
+    static func - (left: ChineseDate, right: Int) -> ChineseDate {
+        return ChineseDate.fromDate(date: Calendar.current.date(byAdding: .day, value: -right, to: left.toDate())!)
     }
     
-    static func - (left: ZhDate, right: ZhDate) -> Int {
+    static func - (left: ChineseDate, right: ChineseDate) -> Int {
         return Calendar.current.dateComponents([.day], from: right.toDate(), to: left.toDate()).day!
     }
     
-    static func - (left: ZhDate, right: Date) -> Int {
+    static func - (left: ChineseDate, right: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: right, to: left.toDate()).day!
     }
 }
