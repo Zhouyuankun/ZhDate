@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct NongDate: CustomStringConvertible {
+public struct NongDate: CustomStringConvertible {
     //toString
-    var description: String {
+    public var description: String {
         return "农历\(self.lunarYear)年\(self.leapMonth ? "闰" : "")\(self.lunarMonth)月\(self.lunarDay)日"
     }
-    let lunarYear: Int
-    let lunarMonth: Int
-    let lunarDay: Int
-    let leapMonth: Bool
+    public let lunarYear: Int
+    public let lunarMonth: Int
+    public let lunarDay: Int
+    public let leapMonth: Bool
     
     var yearCode: Int {
         CHINESEYEARCODE[lunarYear - 1900]
@@ -24,7 +24,7 @@ struct NongDate: CustomStringConvertible {
         NongDate.dateStringToDate(str: CHINESENEWYEAR[self.lunarYear - 1900])
     }
     
-    init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) {
+    public init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) {
         guard NongDate.validate(year: lunarYear, month: lunarMonth, day: lunarDay, leap: leapMonth) else {
             fatalError("The Chinese date given is not exist.")
         }
@@ -36,13 +36,13 @@ struct NongDate: CustomStringConvertible {
     
     //lunar to solar
     //
-    func toDate() -> Date {
+    public func toDate() -> Date {
         var dateComponent = DateComponents()
         dateComponent.day = daysFromChunjie()
         return Calendar.current.date(byAdding: dateComponent, to: self.newYear)!
     }
     
-    static func fromDate(date: Date) -> NongDate {
+    public static func fromDate(date: Date) -> NongDate {
         var lunarYear = Calendar.current.dateComponents([.year], from: date).year!
         //当时农历新年时的日期对象
         let newYearDate = NongDate.dateStringToDate(str: CHINESENEWYEAR[lunarYear - 1900])
@@ -84,7 +84,7 @@ struct NongDate: CustomStringConvertible {
     }
     
     //Days between current lunar day and lunar new year
-    func daysFromChunjie() -> Int {
+    public func daysFromChunjie() -> Int {
         let monthDays = NongDate.decode(yearCode: self.yearCode)
         //当前农历年的闰月，为0表示无闰月
         let monthLeap = self.yearCode & 0xf
@@ -105,7 +105,7 @@ struct NongDate: CustomStringConvertible {
         return daysPassedMonth + self.lunarDay - 1
     }
     
-    func chinese() -> String {
+    public func chinese() -> String {
         let ZHNUMS = ["〇","一","二","三","四","五","六","七","八","九","十"]
         let SHENGXIAO = ["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"]
         var zhYear = ""
@@ -142,7 +142,7 @@ struct NongDate: CustomStringConvertible {
         return "\(zhYear)年\(zhMonth)月\(zhDay) \(zhTGDZ)\(zhSX)年"
     }
     
-    static func today() -> NongDate {
+    public static func today() -> NongDate {
         return NongDate.fromDate(date: Date())
     }
 
@@ -207,23 +207,23 @@ struct NongDate: CustomStringConvertible {
 }
 
 extension NongDate {
-    static func == (left: NongDate, right: NongDate) -> Bool {
+    public static func == (left: NongDate, right: NongDate) -> Bool {
         return left.lunarYear == right.lunarYear && left.lunarMonth == right.lunarMonth && left.lunarDay == right.lunarDay && left.leapMonth == right.leapMonth
     }
     
-    static func + (left: NongDate, right: Int) -> NongDate {
+    public static func + (left: NongDate, right: Int) -> NongDate {
         return NongDate.fromDate(date: Calendar.current.date(byAdding: .day, value: right, to: left.toDate())!)
     }
     
-    static func - (left: NongDate, right: Int) -> NongDate {
+    public static func - (left: NongDate, right: Int) -> NongDate {
         return NongDate.fromDate(date: Calendar.current.date(byAdding: .day, value: -right, to: left.toDate())!)
     }
     
-    static func - (left: NongDate, right: NongDate) -> Int {
+    public static func - (left: NongDate, right: NongDate) -> Int {
         return Calendar.current.dateComponents([.day], from: right.toDate(), to: left.toDate()).day!
     }
     
-    static func - (left: NongDate, right: Date) -> Int {
+    public static func - (left: NongDate, right: Date) -> Int {
         return Calendar.current.dateComponents([.day], from: right, to: left.toDate()).day!
     }
 }
