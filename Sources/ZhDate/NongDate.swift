@@ -24,9 +24,9 @@ public struct NongDate: CustomStringConvertible {
         NongDate.dateStringToDate(str: CHINESENEWYEAR[self.lunarYear - 1900])
     }
     
-    public init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) {
+    public init(lunarYear: Int, lunarMonth: Int, lunarDay: Int, leapMonth: Bool) throws {
         guard NongDate.validate(year: lunarYear, month: lunarMonth, day: lunarDay, leap: leapMonth) else {
-            fatalError("The Chinese date given is not exist.")
+            throw NSError(domain: "NongDate", code: 100, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("The Chinese date given is invalid, please check it.", comment: "")])
         }
         self.lunarYear = lunarYear
         self.lunarMonth = lunarMonth
@@ -80,7 +80,7 @@ public struct NongDate: CustomStringConvertible {
             leapMonth = true
         }
         
-        return NongDate(lunarYear: lunarYear, lunarMonth: lunarMonth, lunarDay: lunarDay, leapMonth: leapMonth)
+        return try! NongDate(lunarYear: lunarYear, lunarMonth: lunarMonth, lunarDay: lunarDay, leapMonth: leapMonth)
     }
     
     //Days between current lunar day and lunar new year
@@ -227,3 +227,15 @@ extension NongDate {
         return Calendar.current.dateComponents([.day], from: right, to: left.toDate()).day!
     }
 }
+
+extension NongDate {
+    ///不同年份的同月同日，优先闰月
+    public func sameMonthDayInYear(year: Int) -> NongDate {
+        if(NongDate.validate(year: year, month: self.lunarMonth, day: self.lunarDay, leap: self.leapMonth)) {
+            return try! NongDate(lunarYear: year, lunarMonth: self.lunarMonth, lunarDay: self.lunarDay, leapMonth: self.leapMonth)
+        } else {
+            return try! NongDate(lunarYear: year, lunarMonth: self.lunarMonth, lunarDay: self.lunarDay, leapMonth: false)
+        }
+    }
+}
+
