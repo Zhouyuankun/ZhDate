@@ -19,4 +19,18 @@ final class ZhDateTests: XCTestCase {
         print(zhd + 100) //农历2024年3月26日
         print(NongDate.today()) //农历2023年4月20日
     }
+    
+    func testToday() throws {
+        let date = Date()
+        let date_nong = NongDate.fromDate(date: date)
+        print("Today in Gregorian: \(date)")
+        print("Today in Chinese: \(date_nong)")
+    }
+    
+    func testDesignatedDay() throws {
+        let date_nong = NongDate(lunarYear: 1976, lunarMonth: 8, lunarDay: 25, leapMonth: false)
+        print("The day in Gregorian(Current TimeZone): \(date_nong.toDate().localDateString(dateFormat: "yyyy-MM-dd", timezone: TimeZone.current))")
+        print("The day in Chinese: \(date_nong)")
+        print("The day in Chinese full: \(date_nong.chinese())")
+    }
 }
