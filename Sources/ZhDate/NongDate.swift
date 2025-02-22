@@ -105,7 +105,7 @@ public struct NongDate: CustomStringConvertible {
         return daysPassedMonth + self.lunarDay - 1
     }
     
-    public func chinese() -> String {
+    public func yearMonthDayDescription() -> String {
         let ZHNUMS = ["〇","一","二","三","四","五","六","七","八","九","十"]
         let SHENGXIAO = ["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"]
         var zhYear = ""
@@ -139,7 +139,37 @@ public struct NongDate: CustomStringConvertible {
             zhDay = "三十"
         }
         
-        return "\(zhYear)年\(zhMonth)月\(zhDay) \(zhTGDZ)\(zhSX)年"
+        return "\(zhYear)年\(zhMonth)月\(zhDay)日 \(zhTGDZ)\(zhSX)年"
+    }
+    
+    public func monthDayDescription() -> String {
+        let ZHNUMS = ["〇","一","二","三","四","五","六","七","八","九","十"]
+        var zhMonth = self.leapMonth ? "闰" : ""
+        var zhDay = ""
+        
+        if self.lunarMonth == 1 {
+            zhMonth += "正"
+        } else if self.lunarMonth == 12 {
+            zhMonth += "腊"
+        } else if self.lunarMonth <= 10 {
+            zhMonth += ZHNUMS[self.lunarMonth]
+        } else {
+            zhMonth += "十\(ZHNUMS[self.lunarMonth - 10])"
+        }
+        
+        if self.lunarDay <= 10 {
+            zhDay = "初\(ZHNUMS[self.lunarDay])"
+        } else if self.lunarDay < 20 {
+            zhDay = "十\(ZHNUMS[self.lunarDay - 10])"
+        } else if self.lunarDay == 20 {
+            zhDay = "二十"
+        } else if self.lunarDay < 30 {
+            zhDay = "廿\(ZHNUMS[self.lunarDay - 20])"
+        } else {
+            zhDay = "三十"
+        }
+        
+        return "\(zhMonth)月\(zhDay)日"
     }
     
     public static func today() -> NongDate {
