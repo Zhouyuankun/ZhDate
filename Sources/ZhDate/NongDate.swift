@@ -192,7 +192,7 @@ public struct NongDate: CustomStringConvertible {
         } else if day <= 29 { //非闰月，并且日期小于等于29，返回通过
             return true
         } else { //非闰月日期为30，返回年度代码中的月份位是否为1，即是否为大月
-            return ((yearCode >> (12 - month) + 4) & 1) == 1
+            return ((yearCode >> ((12 - month) + 4)) & 1) == 1
         }
     }
 
